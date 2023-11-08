@@ -1,0 +1,74 @@
+import numpy as np
+import tkinter as tk
+from tkinter import Label, Entry, Button, messagebox
+
+n = 0
+A_entries = []
+b_entries = []
+
+
+def solve_equation():
+    global n, A_entries, b_entries
+    A = np.zeros((n, n))
+    b = np.zeros(n)
+
+    for i in range(n):
+        for j in range(n):
+            A[i, j] = float(A_entries[i][j].get())
+
+    for i in range(n):
+        b[i] = float(b_entries[i].get())
+
+    if np.linalg.matrix_rank(A) < n:
+        if np.linalg.matrix_rank(np.column_stack((A, b))) < np.linalg.matrix_rank(A):
+            messagebox.showinfo("Kết quả", "Hệ phương trình có vô số nghiệm")
+        else:
+            messagebox.showinfo("Kết quả", "Hệ phương trình vô nghiệm")
+    else:
+        x = np.linalg.solve(A, b)
+        messagebox.showinfo("Kết quả", f"Nghiệm của hệ phương trình là: {x}")
+
+
+# Tạo cửa sổ
+root = tk.Tk()
+root.title("Giải hệ phương trình tuyến tính")
+
+# Nhập giá trị của n
+n_label = Label(root, text="Nhập số n:")
+n_label.pack()
+n_entry = Entry(root)
+n_entry.pack()
+
+
+# Button để xác nhận giá trị của n và tạo các trường nhập liệu cho ma trận A và vectơ b
+def confirm_n():
+    global n, A_entries, b_entries
+    n = int(n_entry.get())
+    A_label = Label(root, text="Nhập giá trị cho ma trận A:")
+    A_label.pack()
+    A_entries = []
+    for i in range(n):
+        row_entries = []
+        for j in range(n):
+            entry = Entry(root)
+            entry.pack()
+            row_entries.append(entry)
+        A_entries.append(row_entries)
+
+    b_label = Label(root, text="Nhập giá trị cho vectơ b:")
+    b_label.pack()
+    b_entries = []
+    for i in range(n):
+        entry = Entry(root)
+        entry.pack()
+        b_entries.append(entry)
+
+    solve_button = Button(root, text="Giải hệ phương trình", command=solve_equation)
+    solve_button.pack()
+
+
+confirm_button = Button(root, text="Xác nhận n", command=confirm_n)
+confirm_button.pack()
+
+# Main loop
+root.mainloop()
